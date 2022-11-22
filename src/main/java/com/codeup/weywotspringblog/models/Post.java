@@ -1,10 +1,18 @@
 package com.codeup.weywotspringblog.models;
 
+import javax.persistence.*;
+
+@Entity
+@Table(name="posts")
 public class Post {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    @Column(nullable = false, length = 50)
     private String title;
 
+    @Column(nullable = false, length = 500)
     private String body;
 
     public String getTitle() {

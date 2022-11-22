@@ -1,12 +1,10 @@
 package com.codeup.weywotspringblog.controllers;
 
 import com.codeup.weywotspringblog.models.Post;
+import com.codeup.weywotspringblog.repositories.PostsRepository;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,35 +13,36 @@ import java.util.List;
 @RequestMapping("/posts")
 public class PostController {
 
+    private PostsRepository postsDao;
+
+    public PostController(PostsRepository postsDao){
+        this.postsDao = postsDao;
+    }
+
     @GetMapping
     public String allPosts(Model model){
-        Post post1 = new Post(1, "First", "This is my first post!!!");
-        Post post2 = new Post(2, "Second", "Hey everyone, I'm baaack");
-        List<Post> allPosts = new ArrayList<>(List.of(post1, post2));
+        List<Post> allPosts = postsDao.findAll();
         model.addAttribute("allPosts", allPosts);
         return "/posts/index";
     }
 
     @GetMapping("/{id}")
     public String onePost(@PathVariable long id, Model model){
-        Post post1 = new Post(1, "First", "This is my first post!!!");
-        Post post2 = new Post(2, "Second", "Hey everyone, I'm baaack");
-        Post post3 = new Post(3, "Yo", "heye heye heyeeeeee");
-        List<Post> allPosts = new ArrayList<>(List.of(post1, post2, post3));
-        Post post = null;
-        for (Post userPost : allPosts){
-            if (userPost.getId() == id){
-                post = userPost;
-            }
-        }
+        Post post = postsDao.findById(id);
         model.addAttribute("post", post);
-//        model.addAttribute("postId", id);
         return "/posts/show";
     }
 
     @GetMapping("/create")
-    @ResponseBody
     public String createPost(){
-        return "Here is the form to create a post!";
+        return "/posts/create";
     }
+
+    @PostMapping("/create")
+    public String submitPost(@RequestParam(name="title") String title, @RequestParam(name="body") String body){
+        Post post = new Post(title, body);
+        postsDao.save(post);
+        return "redirect:/posts";
+    }
+
 }
