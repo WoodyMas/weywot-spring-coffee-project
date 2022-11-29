@@ -33,6 +33,14 @@ public class Supplier {
         this.name = name;
     }
 
+    public List<Coffee> getCoffees() {
+        return coffees;
+    }
+
+    public void setCoffees(List<Coffee> coffees) {
+        this.coffees = coffees;
+    }
+
     public Supplier() {
     }
 
